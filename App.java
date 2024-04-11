@@ -6,22 +6,22 @@ public class App {
     // les prix sont fixes pour chaque type de chose mais des réductions peuvent s'appliquer
     // si cela rentre dans une formule!
     public int Compute(String type, String name, String beverage, String size, String dessert, String dsize, String coffee) {
-        // prix total à payer pour le client
 
-        // le type ne peut être vide car le client doit déclarer au moins un repas
         if (type == null || name == null || type.isEmpty() || name.isEmpty()) return -1;
 
         Types mapped_type= Types.valueOf(type);
         Size mapped_size = Size.valueOf(size);
         DsizeType mapped_dsize = DsizeType.valueOf(dsize);
 
+        switch (mapped_type){
+            case assiette: total += 15; break;
+            case sandwich: total += 10; break;
+        }
+
         if (mapped_type == Types.assiette) {
-            total += 15;
-            // ainsi qu'une Poisson de taille:
             if (mapped_size == Size.petit) {
-                compute_size(2, DsizeType.valueOf(dsize), 2, 4, true);
-                // si on prends moyen
-            } else if (size=="moyen") {
+                compute_small_size(DsizeType.valueOf(dsize));
+            } else if (mapped_size == Size.moyen) {
                 compute_size(3, DsizeType.valueOf(dsize), 18, 4, false);
           } else if (mapped_size == Size.grand) {
                 compute_size(4, DsizeType.valueOf(dsize), 2, 21, true);
@@ -29,11 +29,8 @@ public class App {
         }
         // mode sandwich
         else if (mapped_type == Types.sandwich){
-            total += 10;
-            // ainsi qu'une boisson de taille:
             if (mapped_size == Size.petit) {
-                compute_size(2, DsizeType.valueOf(dsize), 2, 4, true);
-                // si on prends moyen
+                compute_small_size(DsizeType.valueOf(dsize));
               } else if (mapped_size == Size.moyen) {
                 compute_size(3, DsizeType.valueOf(dsize), 13, 4, true);
             } else if (mapped_size == Size.grand) {
@@ -43,11 +40,20 @@ public class App {
         if (mapped_type == Types.assiette && mapped_size == Size.moyen && mapped_dsize == DsizeType.normal && coffee.equals("yes")) {
             System.out.print(" avec café offert!");
         } else if (!coffee.equals("yes")){
-            // Assume coffee costs 1 unit, adding to the total only if coffee is not included
             total += 1;
         }
         return total;
     }
+
+    private void compute_small_size(DsizeType dsize) {
+        total += 2;
+        if (dsize == DsizeType.normal) {
+                total += 2;
+        } else {
+                total += 4;
+        }
+    }
+
 
 
     public void compute_size(int add_total, DsizeType dsize, int total_normal, int total_other, boolean is_added){
